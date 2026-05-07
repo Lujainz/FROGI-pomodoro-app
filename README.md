@@ -32,18 +32,6 @@ FocusTimer/
 ├── .vscode/
 │   ├── extensions.json
 │   └── settings.json
-├── assets/
-│   └── images/
-│       ├── android-icon-background.png
-│       ├── android-icon-foreground.png
-│       ├── android-icon-monochrome.png
-│       ├── favicon.png
-│       ├── icon.png
-│       ├── partial-react-logo.png
-│       ├── react-logo.png
-│       ├── react-logo@2x.png
-│       ├── react-logo@3x.png
-│       └── splash-icon.png
 ├── src/
 │   ├── App.jsx
 │   ├── assets/
