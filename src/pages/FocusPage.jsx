@@ -2,6 +2,7 @@ import { Audio } from "expo-av";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Image, Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { useNavigate } from "react-router-native";
+import { useAudio } from "../context/AudioContext";
 
 async function playDingOnce() {
   const { sound } = await Audio.Sound.createAsync(require("../assets/sounds/ding.mp3"), {
@@ -19,10 +20,9 @@ export default function FocusPage() {
   const defaultSeconds = 25 * 60;
   const [secondsLeft, setSecondsLeft] = useState(defaultSeconds);
   const [isRunning, setIsRunning] = useState(false);
-  const [isDancing, setIsDancing] = useState(false);
+  const { isDancing, toggleDancing } = useAudio();
 
   const prevSecondsLeftRef = useRef(null);
-  const lofiSoundRef = useRef(null);
 
   useEffect(() => {
     Audio.setAudioModeAsync({
@@ -41,16 +41,6 @@ export default function FocusPage() {
     }
     prevSecondsLeftRef.current = secondsLeft;
   }, [secondsLeft]);
-
-  useEffect(() => {
-    return () => {
-      const sound = lofiSoundRef.current;
-      if (sound) {
-        sound.unloadAsync().catch(() => {});
-        lofiSoundRef.current = null;
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (!isRunning) return undefined;
@@ -85,34 +75,6 @@ export default function FocusPage() {
     setSecondsLeft(defaultSeconds);
   };
 
-  const toggleEasterEgg = async () => {
-    if (isDancing) {
-      const sound = lofiSoundRef.current;
-      lofiSoundRef.current = null;
-      setIsDancing(false);
-      if (sound) {
-        try {
-          await sound.stopAsync();
-          await sound.unloadAsync();
-        } catch {
-          /* ignore */
-        }
-      }
-      return;
-    }
-
-    try {
-      const { sound } = await Audio.Sound.createAsync(require("../assets/sounds/lofi3.mp3"), {
-        shouldPlay: true,
-        isLooping: true,
-      });
-      lofiSoundRef.current = sound;
-      setIsDancing(true);
-    } catch {
-      /* ignore load errors */
-    }
-  };
-
   return (
     <SafeAreaView style={styles.screen}>
       <Pressable style={({ pressed }) => [styles.todoShortcut, pressed && styles.pressed]} onPress={() => navigate("/todo")}>
@@ -145,7 +107,7 @@ export default function FocusPage() {
 
         <Pressable
           style={({ pressed }) => [styles.cornerFrogHit, pressed && styles.pressed]}
-          onPress={() => void toggleEasterEgg()}
+          onPress={() => void toggleDancing()}
         >
           <Image
             source={

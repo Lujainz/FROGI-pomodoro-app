@@ -1,84 +1,100 @@
 # FocusTimer
 
-FocusTimer is a **Pomodoro-style focus app** built with Expo. The main screen gives you a 25-minute focus session with start, pause, and reset controls, plus navigation to break and todo flows as you build them out.
+FocusTimer is a React Native Pomodoro app built with Expo. It includes a 25-minute focus timer, a 5-minute break timer, and a to-do list screen, with animated frog visuals and audio effects.
 
 ## Pages
 
-| Route   | Component   | Purpose |
-|--------|-------------|---------|
-| `/` or `/focus` | **FocusPage** | Main focus timer (25:00 countdown), motivational copy, mode links, optional ding when the timer hits zero, and a small interactive frog easter egg with sound. |
-| `/break` | **BreakPage** | Reserved for your **break** period between focus sessions (placeholder for now). |
-| `/todo`  | **TodoPage**  | Reserved for a **todo / task list** and quick access from the focus screen (placeholder for now). |
+- `/` and `/focus` → `FocusPage`: 25:00 timer with start/pause/reset, ding on completion, and an easter-egg frog music toggle.
+- `/break` → `BreakPage`: 5:00 break timer with the same controls/behavior and break-themed visuals.
+- `/todo` → `TodoPage`: interactive to-do list with add, check/uncheck, and delete actions, plus navigation back to Focus/Break.
 
 ## Tech stack
 
-- **React** & **React Native** — UI and app logic
-- **Expo** (SDK 54) — build, Metro bundler, Expo Go workflow
-- **React Router** ([`react-router-native`](https://reactrouter.com/)) — navigation between Focus, Break, and Todo
-- **expo-av** — sound effects (ding when timer completes) and background music for the frog easter egg
+- React Native
+- Expo (SDK 54)
+- expo-av
+- react-router-native
+- react-native-reanimated
 
-## How to run
+## Contexts
 
-From the project root:
+- `src/context/AudioContext.jsx`
+  - Manages global easter-egg audio state.
+  - Stores `isDancing` and exposes `toggleDancing()` so music persists across page switches.
+- `src/context/TodoContext.jsx`
+  - Manages global todo list state and actions.
+  - Exposes `tasks`, `addTask`, `toggleTask`, and `deleteTask`.
 
-```bash
-npm install
-```
-
-```bash
-npx expo start
-```
-
-Then open the project in **Expo Go** (QR code / dev menu), or press `i` / `a` for iOS Simulator / Android emulator if you have them configured.
-
-If Metro behaves oddly after dependency changes:
-
-```bash
-npx expo start --clear
-```
-
-## Folder structure (overview)
+## Folder structure (current)
 
 ```text
 FocusTimer/
-├── App.js                 # Entry: forwards to src/App.jsx
-├── app.json               # Expo config (name, splash, plugins, …)
-├── babel.config.js        # Babel preset (Expo)
-├── assets/                # Expo template assets (icons, splash, favicon)
+├── .vscode/
+│   ├── extensions.json
+│   └── settings.json
+├── assets/
+│   └── images/
+│       ├── android-icon-background.png
+│       ├── android-icon-foreground.png
+│       ├── android-icon-monochrome.png
+│       ├── favicon.png
+│       ├── icon.png
+│       ├── partial-react-logo.png
+│       ├── react-logo.png
+│       ├── react-logo@2x.png
+│       ├── react-logo@3x.png
+│       └── splash-icon.png
 ├── src/
-│   ├── App.jsx           # Routes: focus, break, todo
-│   ├── index.css         # Unused placeholder (web/global styles)
-│   ├── pages/            # Screens: FocusPage, BreakPage, TodoPage
-│   ├── components/       # Shared UI (TimerDisplay, MessageBanner, …)
-│   ├── context/          # TimerContext (future shared timer state)
+│   ├── App.jsx
 │   ├── assets/
-│   │   ├── images/       # GIF illustrations used on FocusPage
-│   │   └── sounds/       # MP3 assets referenced by expo-av
-│   └── sounds/           # Duplicate copies if you keep files here too
-├── components/, hooks/, …  # Legacy/template folders from Expo starter (may be unused)
+│   │   ├── images/
+│   │   │   ├── dance.gif
+│   │   │   ├── frog-one.gif
+│   │   │   ├── frog-three.gif
+│   │   │   ├── frog-two.gif
+│   │   │   └── sound.gif
+│   │   └── sounds/
+│   │       ├── ding.mp3
+│   │       └── lofi3.mp3
+│   ├── components/
+│   │   ├── AddTaskInput.jsx
+│   │   └── TaskItem.jsx
+│   ├── context/
+│   │   ├── AudioContext.jsx
+│   │   ├── TimerContext.jsx
+│   │   └── TodoContext.jsx
+│   └── pages/
+│       ├── BreakPage.jsx
+│       ├── FocusPage.jsx
+│       └── TodoPage.jsx
+├── App.js
+├── app.json
+├── babel.config.js
+├── eslint.config.js
+├── package-lock.json
 ├── package.json
-└── README.md
+├── README.md
+└── tsconfig.json
 ```
-
-Focus-related UI and routing live primarily under **`src/`**.
 
 ## Assets needed
 
-Place media files where **`FocusPage.jsx`** expects them (`require(...)` paths):
-
 ### GIFs (`src/assets/images/`)
 
-| File         | Role |
-|--------------|------|
-| `frog-one.gif` | Hero frog on the focus session screen |
-| `sound.gif`    | Small frog icon (corner); tapping toggles “listening/dancing” mode |
-| `dance.gif`    | Alternate gif shown while music plays |
+- `frog-one.gif` (Focus page main frog)
+- `frog-two.gif` (Break page main frog)
+- `frog-three.gif` (Todo page frog under title)
+- `sound.gif` (corner easter-egg idle frog)
+- `dance.gif` (corner easter-egg active frog)
 
 ### Sounds (`src/assets/sounds/`)
 
-| File       | Role |
-|------------|------|
-| `ding.mp3`  | Short alert played once when the timer reaches **00:00** |
-| `lofi3.mp3` | Background loop played while the corner frog is in “dancing/on” mode |
+- `ding.mp3` (played when timer reaches 00:00)
+- `lofi3.mp3` (loops while easter-egg frog is active)
 
-The bundle resolves **`require`** paths relative to the **`FocusPage.jsx`** imports (`src/pages`). Optionally duplicate/copy **`src/sounds/*.mp3`** into **`src/assets/sounds/`** if you maintain originals alongside **`assets/`**.
+## Run the project
+
+```bash
+npm install
+npx expo start
+```
