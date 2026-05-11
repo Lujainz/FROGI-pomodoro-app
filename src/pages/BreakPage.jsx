@@ -20,7 +20,7 @@ export default function BreakPage() {
   const defaultSeconds = 5 * 60;
   const [secondsLeft, setSecondsLeft] = useState(defaultSeconds);
   const [isRunning, setIsRunning] = useState(false);
-  const { isDancing, toggleDancing } = useAudio();
+  const { isDancing, openPicker, stopMusic } = useAudio();
 
   const prevSecondsLeftRef = useRef(null);
 
@@ -113,7 +113,13 @@ export default function BreakPage() {
 
         <Pressable
           style={({ pressed }) => [styles.cornerFrogHit, pressed && styles.pressed]}
-          onPress={() => void toggleDancing()}
+          onPress={() => {
+            if (isDancing) {
+              void stopMusic();
+            } else {
+              openPicker();
+            }
+          }}
         >
           <Image
             source={

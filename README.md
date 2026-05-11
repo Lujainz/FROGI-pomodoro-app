@@ -1,29 +1,34 @@
 # FocusTimer
 
-FocusTimer is a React Native Pomodoro app built with Expo. It includes a 25-minute focus timer, a 5-minute break timer, and a to-do list screen, with animated frog visuals and audio effects.
+FocusTimer is a React Native Pomodoro-style app built with Expo. It pairs a **25-minute focus** session and a **5-minute break** session in one horizontally swipeable timer experience, includes **timer completion sounds**, a **corner frog easter egg** with **pickable lofi tracks** that keep playing while you move around the app, and a **persistent to-do list**.
 
-## Pages
+## Pages (routes)
 
-- `/` and `/focus` → `FocusPage`: 25:00 timer with start/pause/reset, ding on completion, and an easter-egg frog music toggle.
-- `/break` → `BreakPage`: 5:00 break timer with the same controls/behavior and break-themed visuals.
-- `/todo` → `TodoPage`: interactive to-do list with add, check/uncheck, and delete actions, plus navigation back to Focus/Break.
+| Route | What you see |
+|-------|----------------|
+| `/`, `/focus`, `/break` | **`TimerSwipeScreen`**: a paging horizontal strip with **`FocusPage`** (left) and **`BreakPage`** (right). Swipe left/right between focus and break; **FOCUS** / **BREAK** buttons navigate the same way as before. |
+| `/todo` | **`TodoPage`**: to-do list with add, complete, and delete; tasks survive navigation thanks to **`TodoContext`**. |
 
 ## Tech stack
 
-- React Native
-- Expo (SDK 54)
-- expo-av
-- react-router-native
-- react-native-reanimated
+- **React Native**
+- **Expo** (SDK 54)
+- **expo-av**
+
+The app also uses **react-router-native** for routing, **react-native-reanimated** for route transitions, and a built-in **ScrollView** for the focus/break pager.
 
 ## Contexts
 
-- `src/context/AudioContext.jsx`
-  - Manages global easter-egg audio state.
-  - Stores `isDancing` and exposes `toggleDancing()` so music persists across page switches.
-- `src/context/TodoContext.jsx`
-  - Manages global todo list state and actions.
-  - Exposes `tasks`, `addTask`, `toggleTask`, and `deleteTask`.
+### `src/context/AudioContext.jsx`
+
+- **`songs`**: fixed list of five lofi tracks (`require` paths to mp3s) with emoji + label for the picker.
+- **State**: `isDancing` (music on/off), `showPicker` (song modal visible), `selectedSong` (current track object or `null`).
+- **API**: `openPicker`, `closePicker`, `selectSong(song)`, `stopMusic` — loads/stops/unloads **`expo-av`** `Sound` for the easter-egg music so it **persists across screens** (provider wraps the router).
+- Corner frog: tap opens the picker when idle; tap again while playing **stops** music (does not reopen the picker).
+
+### `src/context/TodoContext.jsx`
+
+- Holds **`tasks`** and helpers **`addTask`**, **`toggleTask`**, **`deleteTask`** so the list does not reset when leaving **`TodoPage`**.
 
 ## Folder structure (current)
 
@@ -55,18 +60,25 @@ FocusTimer/
 │   │   │   └── sound.gif
 │   │   └── sounds/
 │   │       ├── ding.mp3
-│   │       └── lofi3.mp3
+│   │       ├── lofi3.mp3
+│   │       ├── lofi-ambient.mp3
+│   │       ├── lofi-chill.mp3
+│   │       ├── lofi-cozy.mp3
+│   │       ├── lofi-hiphop.mp3
+│   │       └── lofi-jazz.mp3
 │   ├── components/
 │   │   ├── AddTaskInput.jsx
+│   │   ├── SongPicker.jsx
 │   │   └── TaskItem.jsx
 │   ├── context/
 │   │   ├── AudioContext.jsx
-│   │   ├── TimerContext.jsx
 │   │   └── TodoContext.jsx
-│   └── pages/
-│       ├── BreakPage.jsx
-│       ├── FocusPage.jsx
-│       └── TodoPage.jsx
+│   ├── pages/
+│   │   ├── BreakPage.jsx
+│   │   ├── FocusPage.jsx
+│   │   └── TodoPage.jsx
+│   └── screens/
+│       └── TimerSwipeScreen.jsx
 ├── App.js
 ├── app.json
 ├── babel.config.js
@@ -81,20 +93,35 @@ FocusTimer/
 
 ### GIFs (`src/assets/images/`)
 
-- `frog-one.gif` (Focus page main frog)
-- `frog-two.gif` (Break page main frog)
-- `frog-three.gif` (Todo page frog under title)
-- `sound.gif` (corner easter-egg idle frog)
-- `dance.gif` (corner easter-egg active frog)
+| File | Use |
+|------|-----|
+| `frog-one.gif` | Focus screen hero |
+| `frog-two.gif` | Break screen hero |
+| `frog-three.gif` | Todo screen under title |
+| `sound.gif` | Easter-egg frog (idle) |
+| `dance.gif` | Easter-egg frog (while music plays) |
 
 ### Sounds (`src/assets/sounds/`)
 
-- `ding.mp3` (played when timer reaches 00:00)
-- `lofi3.mp3` (loops while easter-egg frog is active)
+| File | Use |
+|------|-----|
+| `ding.mp3` | Plays when focus or break timer hits **00:00** |
+| `lofi-chill.mp3` | Picker track: lofi chill |
+| `lofi-cozy.mp3` | Picker track: lofi cozy |
+| `lofi-hiphop.mp3` | Picker track: lofi hip hop |
+| `lofi-ambient.mp3` | Picker track: lofi ambient |
+| `lofi-jazz.mp3` | Picker track: lofi jazz |
+| `lofi3.mp3` | Present under `src/assets/sounds/` (not wired in current picker code) |
 
 ## Run the project
 
 ```bash
 npm install
 npx expo start
+```
+
+Open the project in **Expo Go** or a simulator from the Metro UI. If bundling acts stale after changes:
+
+```bash
+npx expo start --clear
 ```

@@ -20,7 +20,7 @@ export default function FocusPage() {
   const defaultSeconds = 25 * 60;
   const [secondsLeft, setSecondsLeft] = useState(defaultSeconds);
   const [isRunning, setIsRunning] = useState(false);
-  const { isDancing, toggleDancing } = useAudio();
+  const { isDancing, openPicker, stopMusic } = useAudio();
 
   const prevSecondsLeftRef = useRef(null);
 
@@ -107,7 +107,13 @@ export default function FocusPage() {
 
         <Pressable
           style={({ pressed }) => [styles.cornerFrogHit, pressed && styles.pressed]}
-          onPress={() => void toggleDancing()}
+          onPress={() => {
+            if (isDancing) {
+              void stopMusic();
+            } else {
+              openPicker();
+            }
+          }}
         >
           <Image
             source={
