@@ -1,6 +1,12 @@
 # 🐸 FROGI – Cozy Pomodoro App
 
+<p align="center">
+  <img src="src/assets/images/dance.gif" width="250"/>
+</p>
+
+<p align="center">
 FROGI is a cute and cozy Pomodoro-style productivity app built with React Native and Expo.
+</p>
 
 It combines:
 - ⏳ Focus & break timers
